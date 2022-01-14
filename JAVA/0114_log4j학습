@@ -1,0 +1,70 @@
+Log4j
+	1. 기능 - 사용자들의 흔적을 기록하기 위한 솔루션
+	2. 제공처
+		a. apache 재단(비영리 IT 솔루션 제공 재단)
+		b. https://logging.apache.org/
+	3. 사용자
+		a. 개발자
+		b. log4j다운로드
+		c. 제시된 API를 호출하면서 적절한 시점에 활용
+	4. 기록레벨
+		a. 디테일 정보 섬세하게 기록 레발
+		b. 디버깅 레벨(debug)
+			- 개발시 필요한 소소한 정보 다 기록
+		c. 정보알림 (info)
+			- 개발 후에 관리자들이 실행에 대한 흐름 및 user대한 에러가아닌 정보기록
+		d. 경로
+			- 에러는 아니지만 거슬리는 경미한 메세지 기록
+		e. 에러
+			- 실행시 발생되는 심각한 에러 상황에 대한 기록
+	5. 개발 방법
+		a. log4j 다운로드
+		b. log4j 설정 파일 개발
+			- log4j.properties 파일 필수
+				- key = value 구조로 저장
+			- 어떤 내용을 어디에 기록할 것인가에 대한 정보 설정
+		c. 개발하는 소스에서 사용
+	6. log4j.properties 부연설명
+		# Set root category priority to INFO and its only appender to CONSOLE.
+			- 단순 주석(properties 파일의 주석)
+			
+		log4j.rootCategory=info, CONSOLE, daily
+			- info : info레벨 의미
+			- CONSOLE : 로그기록 출력 위치, 실행되는 콘솔창
+			- daily : 백업용으로 저장하고자 하는 파일로 지정하기 위한 설정
+
+		# CONSOLE is set to be a ConsoleAppender using a PatternLayout.
+		log4j.appender.CONSOLE=org.apache.log4j.ConsoleAppender
+			- log4j.appender.CONSOLE : 로그기록 추가하면서 출력하는 콘솔 지정
+			- org.apache.log4j.ConsoleAppender : 콘솔에 출력 해주는 기능의 API 지정
+				- 개발자는 설정
+				- log4j가 설정 정보 read 후에 객체 생성후 기능 수행하게 셋팅
+				
+		log4j.appender.CONSOLE.layout=org.apache.log4j.PatternLayout
+			- 어떤 포멧으로 출력할 것인지에 대한 기능 수행 API 지정
+			- 향후 설정하는 형식에 맞게 출력 기능 수행
+			
+		log4j.appender.CONSOLE.layout.ConversionPattern=%d %5p (%F:%L) - %m%n
+			- 실제 출력하는 형식
+			- %d %5p (%F:%L)- %m%n
+			- 날짜 모든 레벨 다 기록 의미
+				- (%F:%L)- %m%n
+					- %F : 기록되는 파일
+					- %L : 실행되는 소스 line
+					- - : 개발자들이 가변적으로 설정 가능한 표현식
+					- %m : 실행된느 메소드의 메세지값 출력(실제 기록하고자 하는 내용)
+					- %n : new line			
+			
+		log4j.appender.daily=org.apache.log4j.DailyRollingFileAppender
+			- 매일매일 file로 기록의미
+		log4j.appender.daily.File=C:\\20220103_lab\\88.log\\playdata.log
+			- 파일 생성 위치 및 파일명
+		log4j.appender.daily.DatePattern='.'yyyy-MM-dd
+			- 매일매일 기록 가능하게 생성되는 파일들의 구분자로 파일명에 날짜추가
+		log4j.appender.daily.layout=org.apache.log4j.PatternLayout
+		log4j.appender.daily.layout.ConversionPattern=%d %5p (%F:%L) - %m%n
+		
+		
+
+			
+			
