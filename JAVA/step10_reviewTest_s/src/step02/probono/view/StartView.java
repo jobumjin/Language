@@ -10,13 +10,11 @@
 
 package step02.probono.view;
 
-import java.util.ArrayList;
-
+import step02.probono.controller.TalentDonationProjectController;
 import step02.probono.model.dto.Beneficiary;
 import step02.probono.model.dto.Donator;
 import step02.probono.model.dto.TalentDonationProject;
 import step02.probono.model.dto.TalentDonationType;
-import step02.probono.service.TalentDonationProjectService;
 
 public class StartView {
 	
@@ -50,46 +48,33 @@ public class StartView {
 		TalentDonationProject audreyHepbunPorject = new TalentDonationProject("02오드리햅번", donator2, beneficiary2, audreyHepbun, "2020-03-31", "2020-04-03", "예술가와의 만남");
 		TalentDonationProject motherTeresaProject = new TalentDonationProject("03마더테레사", donator3, beneficiary3, motherTeresa, "2020-03-31", "2020-04-03", "독거 노인 식사 제공");
 
-		TalentDonationProjectService service = TalentDonationProjectService.getInstance();
+		TalentDonationProjectController controller = TalentDonationProjectController.getInstance();
 		
 		System.out.println("*** 01. Project 생성 ***");
-		service.donationProjectInsert(schweitzerProject);
-		service.donationProjectInsert(audreyHepbunPorject);
-		service.donationProjectInsert(motherTeresaProject);
+		controller.donationProjectInsert(schweitzerProject);
+		controller.donationProjectInsert(audreyHepbunPorject);
+		controller.donationProjectInsert(motherTeresaProject);
 
-		
 		System.out.println("\n*** 02. 모든 Project 검색 ***");
-		ArrayList<TalentDonationProject> allProbonoProject = service.getDonationProjectsList();		
-		EndView.projectListView(allProbonoProject);	
-		
-		
-		
+		controller.getDonationProjectsList();		
+				
 		System.out.println("\n*** 03. '01슈바이처' Project 검색 ***");
-		TalentDonationProject project = service.getDonationProject("01슈바이처");
-		EndView.projectView(project);
-		
-		
+		//exception 호출하는 곳부터 try catch 문으로 묶으면 해결..
+		controller.getDonationProject("01슈바이처");
+
 		//재능 기부자 변경하기 
 		System.out.println("\n*** 04. '01슈바이처' Project의 기부자 변경(수정) 후 해당 Project 검색 ***");
-		service.donationProjectUpdate("01슈바이처", donator4);
-		
-		project = service.getDonationProject("01슈바이처");
-		EndView.projectView(project);
-
+		controller.donationProjectUpdate("01슈바이처", donator4);
 		
 		//재능 수혜자 변경하기 
 		System.out.println("\n*** 05. '01슈바이처' Project의 수혜자 변경(수정) 후 해당 Project 검색 ***");
-		service.beneficiaryProjectUpdate("01슈바이처", beneficiary4);
-		
-		project = service.getDonationProject("01슈바이처");
-		EndView.projectView(project);
-		
+		controller.beneficiaryProjectUpdate("01슈바이처", beneficiary4); //갱신
+		controller.getDonationProject("01슈바이처"); //검색
 		
 		//재능 기부자 삭제하기 
 		System.out.println("\n*** 06. '01슈바이처' Project 삭제 후 삭제한 Project 검색 ***");
-		service.donationProjectDelete("01슈바이처");
-		
-		project = service.getDonationProject("01슈바이처");
-		EndView.projectView(project);
+		controller.donationProjectDelete("01슈바이처");//삭제
+		controller.getDonationProject("01슈바이처");//삭제 후 검색
+	
 	}
 }

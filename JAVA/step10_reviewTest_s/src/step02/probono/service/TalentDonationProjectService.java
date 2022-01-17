@@ -11,6 +11,8 @@ package step02.probono.service;
 
 import java.util.ArrayList;
 
+import step02.probono.exception.ProjectNameDuplicationException;
+import step02.probono.exception.ProjectNotFoundException;
 import step02.probono.model.dto.Beneficiary;
 import step02.probono.model.dto.Donator;
 import step02.probono.model.dto.TalentDonationProject;
@@ -20,12 +22,7 @@ public class TalentDonationProjectService {
 	private static TalentDonationProjectService instance = new TalentDonationProjectService();
 
 	/** 진행중인 Project를 저장하는 배열 */
-	//private TalentDonationProject[] donationProjectList = new TalentDonationProject[10];
 	private ArrayList<TalentDonationProject> donationProjectList = new ArrayList<TalentDonationProject>();
-	
-
-	/** 진행중인 Project 총 개수 : 배열에 저장시마다 index 값 적용, 저장 후에는 index값을 1씩 증가하는 update 실행 */
-	private int index;
 
 	private TalentDonationProjectService() {}
 
@@ -40,9 +37,11 @@ public class TalentDonationProjectService {
 	 * @return 모든 Project
 	 */
 	public ArrayList<TalentDonationProject> getDonationProjectsList() {
+		
 		return donationProjectList;
-	}
 
+	}
+	
 	
 	// TO DO
 	/** 
@@ -51,16 +50,32 @@ public class TalentDonationProjectService {
 	 * @param projectName 프로젝트 이름
 	 * @return TalentDonationProject 검색된 프로젝트 
 	 */
-	public TalentDonationProject getDonationProject(String projectName) {	
+
+	/* 1차 개선
+	 * 없을경우 ProjectNotFoundException 생성 및 반환
+	 * 존재 할 경우 해당 project 반환
+	 * 없을 경우 ProjectNotFoundException 발생
+	 * 
+	 * 2차 개선
+	 * 	- EndView 직접 호출
+	 * 	- 단, 예외 처리가 고려되지 않음
+	 * 
+	 * 3차 개선
+	 * 	- controller 와 model 로 구분
+	 * 	- controller 에서 예외 발생? 정상응답? 처리
+	 */
+	public TalentDonationProject getDonationProject(String projectName) throws ProjectNotFoundException {
 		
-		for(TalentDonationProject tp : donationProjectList) {
-			if(tp != null && tp.getTalentDonationProjectName().equals(projectName)) {
-				return tp;
+		for(TalentDonationProject e : donationProjectList) {
+			if(e.getTalentDonationProjectName().equals(projectName)) {
+//				EndView.projectView(e);
+//				break;
+				return e;
 			}
 		}
-		return null;
+		throw new ProjectNotFoundException("요청하신 project는 존재하지 않습니다.");
 	}
-
+	
 
 	// TO DO
 	/**
@@ -68,7 +83,25 @@ public class TalentDonationProjectService {
 	 * 
 	 * @param project 저장하고자 하는 새로운 프로젝트
 	 */
-	public void donationProjectInsert(TalentDonationProject project) {
+	/* 동일한 이름의 프로젝트로 새로 저장시도시에는 거부해야하는 로직
+	 * 개발 방식
+	 * 1. 동일하지 않다 - 정상 저장
+	 * 2. 동일하다 - 거부
+	 * 		예외 발생?
+	 * 			DB사용시 중복 불허 기능이 예외 발생
+	 * 		문자열 반환?
+	 * 		boolean 반환?
+	 * 		...
+	 * 
+	 */
+	public void donationProjectInsert(TalentDonationProject project) throws ProjectNameDuplicationException {
+
+		for(TalentDonationProject e : donationProjectList) {
+			if(e.getTalentDonationProjectName().equals(project.getTalentDonationProjectName())) {
+				throw new ProjectNameDuplicationException("이미 존재하는 Project입니다");
+			}
+		}
+		
 		donationProjectList.add(project);
 	}
 
@@ -79,13 +112,26 @@ public class TalentDonationProjectService {
 	 * @param projectName 프로젝트 이름
 	 * @param people 기부자 
 	 */
-	public void donationProjectUpdate(String projectName, Donator people) {
+	/* 존재하는 project에 한해서 기부자 수정
+	 * 고려사항 
+	 * 경우의 수 1 - 프로젝트 존재할 경우 수정
+	 * 경우의 수 2 - 미 존재할 경우
+	 * 		예외발생 또는 boolean 반환 ...
+	 * 
+	 * 이번 경우 - boolean 반환
+	 * 	- boolean 값 획득하는 곳은 controller
+	 * 		false : update 실패
+	 *  	true : update 성공
+	 * 
+	 */
+	public boolean donationProjectUpdate(String projectName, Donator people) {
 		for(TalentDonationProject project : donationProjectList) {
-			if(project != null && project.getTalentDonationProjectName().equals(projectName)) {
+			if(project.getTalentDonationProjectName().equals(projectName)) {
 				project.setProjectDonator(people);
-				break;
+				return true;
 			}
 		}
+		return false;
 	}
 	
 	//TO DO
@@ -95,13 +141,27 @@ public class TalentDonationProjectService {
 	 * @param projectName 프로젝트 이름
 	 * @param people 수혜자 
 	 */
-	public void beneficiaryProjectUpdate(String projectName, Beneficiary people) {
-		for(TalentDonationProject project : donationProjectList) {
-			if(project != null && project.getTalentDonationProjectName().equals(projectName)) {
-				project.setProjectBeneficiary(people);
-				break;
+	
+	//? 갱신하고자 하는 프로젝트가 미 존재시 ProjectNotFoundException 발생하기 추가
+	/* 존재하는 프로젝트인 경우 - 수정성공
+	 * 미존재하는 프로젝트인 경우 - 예외 발생
+	 * 
+	 * 이 메소드 호출하는 곳에선 어떻게 성공여부 확인?
+	 * - 미 존재할 경우 예외처리
+	 * - 예외 발생이 안 될경우 수정으로 처리
+	 * 
+	 */
+	public void beneficiaryProjectUpdate(String projectName, Beneficiary people) throws ProjectNotFoundException{
+		for(TalentDonationProject e : donationProjectList) {
+			if(e != null && e.getTalentDonationProjectName().equals(projectName)) {
+				e.setProjectBeneficiary(people);
+				return ; //return뒤에 반환값이 없음 즉 void인 메소드 자체 종료시 return;으로 처리하기도 함
+//				break;
 			}
-		}
+		}	
+		
+		throw new ProjectNotFoundException("수혜자 정보를 수정하고자 하는 프로젝트가 미 존재합니다.");
+		
 	}
 	
 	
@@ -111,24 +171,27 @@ public class TalentDonationProjectService {
 	 * 
 	 * @param projectName 삭제하고자 하는 프로젝트 이름
 	 */
-	public void donationProjectDelete(String projectName) {
-		for(int i = 0; i < donationProjectList.size(); i++) {
-			
-			if(donationProjectList.get(i).getTalentDonationProjectName().equals(projectName)) {
-				donationProjectList.remove(i);//참조했던 객체를 쓰레기로 만들고 null로 대입해서 배열에서 삭제
-				break;
-
-			}
-		}
+	public boolean donationProjectDelete(String projectName) {
+		TalentDonationProject project = null;
+		int count = donationProjectList.size();
 		
+		for(int i=0; i<count; i++) {
+			project = donationProjectList.get(i);
+			if(project.getTalentDonationProjectName().equals(projectName)) {
+				donationProjectList.remove(i);
+				return true;
+			}
+		}		
+		return false;
 	}
-	
+
 	
 	/**
 	 * 진행중인 Project 총 개수 반환
 	 * @return 개수
 	 */
 	public int projectListSize() {
-		return index;
+		return donationProjectList.size();
+		//return index;
 	}
 }

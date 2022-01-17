@@ -61,47 +61,50 @@ public class Donator {
 	public void setTalent(String talent) {
 		this.talent = talent;
 	}
-	/* StringBuilder
-	 * 	1. 문자열 표현하는 API
-	 * 	2. String만 " " 표기로 자동 객체 생성
-	 *  3. new와 생성자로 조합으로만 객체 생성
-	 *  4. String 특징
-	 *  	1. 한번 생성된 객체의 내용값 수정 불가
-	 *  	2. 이미 만들어진 객체의 내용 수정시 heap에 새로운 문자열 객체가 생성되는 원리
-	 *  		"a" + "b" -> a 데이터의 객체 생성 / b 문자열 객체 생성 / ab 라는 문자열 객체 생성
-	 * 		3. 실시간 가변적인 문자열 사용은 고려
-	 * 			- 객체 생성에 따른 자원 낭비
-	 * 	5. 가변적인 문자열 객체 생성에 적합
-	 * 		- 생성된 객체가 저장된 메모리에 갱신 가능
-	 */
+	
+	
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("기부를 희망하는 사원번호 : ");
+		builder.append("Donator [empno=");
 		builder.append(empno);
-		builder.append(", 사원명 : ");
+		builder.append(", ename=");
 		builder.append(ename);
-		builder.append(", 이메일 주소 : ");
+		builder.append(", email=");
 		builder.append(email);
-		builder.append(", 재능 : ");
+		builder.append(", talent=");
 		builder.append(talent);
+		builder.append("]");
 		return builder.toString();
 	}
-//	
+	
+	/* StringBuilder
+	 * 1. 문자열 표현하는 API
+	 * 2. String만 " " 표기로 자동 객체 생성
+	 * 3. new와 생성자로 조합으로만 객체 생성
+	 * 4. String 특징
+	 * 		1. 한번 생성된 객체의 내용값 수정 불가
+	 * 		2. 이미 만들어진 객체의 내용 수정시 heap에 새로운 문자열 객체가 생성되는 원리
+	 * 			"a" + "b" -> a 데이터의 객체 생성 / b 문자열 객체 생성 / ab 라는 문자열 객체 생성
+	 * 		3. 실시간 가변적인 문자열 사용은 고려
+	 * 			- 객체 생성에 따른 자원 낭비
+	 * 5. 가변적인 문자열 객체 생성에 적합
+	 * 		- 생성된 객체가 저장된 메모리에 갱신 가능
+	 * 		- "a" + "b" -> a 데이터의 객체 생성 / b 문자열 객체 생성 / a 메모리에 b 추가
+	 */
+
 //	@Override
 //	public String toString() {
 //		StringBuilder builder = new StringBuilder();
-//		builder.append("Donator [empno=");
+//		builder.append("기부를 희망하는 사원번호 : ");
 //		builder.append(empno);
-//		builder.append(", ename=");
+//		builder.append(", 사원명 : ");
 //		builder.append(ename);
-//		builder.append(", email=");
+//		builder.append(", 이메일 주소 : ");
 //		builder.append(email);
-//		builder.append(", talent=");
+//		builder.append(", 재능 : ");
 //		builder.append(talent);
-//		builder.append("]");
 //		return builder.toString();
 //	}
-	
-	
+
 }
