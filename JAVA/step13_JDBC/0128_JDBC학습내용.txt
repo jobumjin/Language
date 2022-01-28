@@ -1,0 +1,44 @@
+JDBC 학습 내용
+
+1. 개발시 필수 단계
+	*표준 API JDBC
+		- db와 java 언어간 통신 규약
+		- JDBC 라는 protocol
+			(http)
+	
+	1단계 - db 실행중
+
+	2단계 - driver 설치
+		설치 가능하세 보유 -> java 실행 환경에 로딩
+		
+	3단계 - ip/id/pw 에 맞는 db 접속
+		Connection API
+		
+	4단계 - SQL문장 실행 
+		- 정상 접속 된 후에 SQL 실행 가능한 기능의 객체 생성
+		- 메소드로 CRUD 로직 실행
+		- Statement API
+		
+	5단계 - SQL문장 실행 결과 활용
+		- select(query) : ResultSet API
+			ResultSet executeQuery("select")
+				- boolean next()
+				- String getString("컬럼명" or 컬럼위치)
+					- int getInt() / float getFloat()
+					
+		- insert/update/delete(존재하는 table의 update) : 영향받은 행수
+			int executeUpdate("insert/update/delete")
+		
+	6단계 - 접속해제
+		- 자원반환(close)
+		
+2. 인터넷 자원 사용 규약
+	1. http - server와 client간의 통신 규약
+		end user - 사용
+		개발자 - http 통신 규약에 맞게 개발
+		http 제시 - w3		
+		
+
+		
+		
+		
