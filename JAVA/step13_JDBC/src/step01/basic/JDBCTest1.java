@@ -23,10 +23,10 @@ public class JDBCTest1 {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			
 			//접속
-			String url = "jdbc:oracle:thin:@localhost:1521:xe";
+			String url = "자신의 url";
 			
 			//oracle 접속 객체
-			Connection con = DriverManager.getConnection(url ,"SCOTT", "TIGER");
+			Connection con = DriverManager.getConnection(url ,"id", "pw");
 			
 			//oracle 과만 소통하는 문장 실행 객체
 			Statement stmt = con.createStatement();
